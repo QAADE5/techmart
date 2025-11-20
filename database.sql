@@ -1,5 +1,4 @@
 -- TechMart E-commerce Database Setup
--- Session 1: Database Foundations & SQL Essentials
 
 -- Create Database
 CREATE DATABASE TechMart;
@@ -169,3 +168,4 @@ INSERT INTO OrderItems (OrderID, ProductID, Quantity, UnitPrice) VALUES
 -- Order 15 (Lucy Thomas): Tablet + Mouse
 (15, 10, 1, 649.99), -- Samsung Galaxy Tab S9
 (15, 13, 1, 89.99);  -- Logitech MX Master 3
+
