@@ -1,0 +1,17 @@
+Order ID,Customer Name,Email,Phone,Address,Product,Brand,Category,Price,Qty,Total,Order Date,Status,Notes
+1001,James Smith,james.smith@email.com,07700123456,"123 Oak St, London, UK",ThinkPad X1 Carbon,Lenovo,laptop,£1299.99,1,£1299.99,01/03/2024,delivered,VIP customer
+1001,James Smith,james.smith@email.com,07700123456,"123 Oak St, London, UK",AirPods Pro,Apple,accessories,£249.00,1,£249.00,01/03/2024,delivered,Same order as laptop!
+1002,Sarah Johnson,sarah.j@email.com,,"456 Elm Ave, Manchester",Samsung Galaxy S24,Samsung,phone,749.99,1,749.99,2/3/24,DELIVERED,
+1003,David Williams,david.williams@email.com,07700345678,Birmingham (no full address),"HP Pavilion 15, Logitech MX Master 3","HP, Logitech",Laptop/Mouse,£649.99 + £89.99,1 + 1,£739.98,03-03-2024,shipped,Multiple products in one row!
+1004,James Smith,j.smith@email.com,07700123457,"123 Oak Street, London, UK",Nintendo Switch OLED,Nintendo,Gaming,309.99,1,309.99,05/03/2024,delivered,Same customer? Different email & phone!
+1005,Emma Brown,emma.brown@email.com,07700456789,"789 Pine Rd, Leeds, UK",Dell XPS 13,Dell,laptop,£999.99,1,£999.99,March 2024,processing,
+1006a,Michael Jones,michael.jones@email.com,07700567890,"321 Birch Ln, Liverpool, UK",Google Pixel 8 - RETURNED,Google,smartphone,-£599.00,-1,-£599.00,08/03/2024,returned,How do we handle returns?
+,Sophie Davis,sophie.davis@email.com,07700678901,"654 Cedar St, Edinburgh, Scotland",iPhone 15 + iPad Pro,Apple,phones & tablets?,£799 + £549.99 (discount applied),1 + 1,£1348.00,10/03/2024,shipped,Discount applied but where's the record?
+1007,Sarah Johnson,sarah.johnson@email.com,07700234567,"456 Elm Avenue, Manchester, UK",Logitech MX Master 3,Logitech,Accessories,£89.99,1,£89.99,12/03/2024,delivered,Repeat customer - different email format!
+1008,Oliver Miller,oliver.miller@email.com,07700789012,"987 Maple Dr, Glasgow, Scotland",PlayStation 5,Sony,gaming,£479.99,1,£479.99,14/03/2024,processing,Stock was low - might be delayed
+1009,Jessica Wilson,jessica.wilson@email.com,07700890123,"147 Willow Ct, Cardiff, Wales","Microsoft Surface Pro, Anker PowerCore","Microsoft, Anker",tablet/accessory,£899.99 + £29.99,1+1,£929.98,15/03/2024,delivered,Another multi-product row mess
+1010,Thomas Moore,thomas.moore@email.com,07700901234,"258 Spruce Ave, Belfast, N. Ireland",AirPods Pro,Apple,accessories,£249.00,1,£249.00,16/03/2024,shipped,
+1011,David Williams,david.williams@email.com,07700345678,Birmingham (still no full address!),Dell USB-C Hub,Dell,accessories,£79.99,1,£79.99,18/03/2024,delivered,Same customer as order 1003
+1012,Charlotte Taylor,charlotte.taylor@email.com,07701012345,"369 Ash Blvd, Bristol, UK",ThinkPad X1 Carbon,Lenovo,Laptops,£1299.99,1,£1299.99,20/03/2024,processing,Category inconsistency again
+1013,Daniel Anderson,daniel.anderson@email.com,07701123456,"741 Poplar St, Newcastle, UK",OnePlus 12,OnePlus,smartphone,£549.99,1,£549.99,21/03/2024,delivered,
+1014,Lucy Thomas,lucy.thomas@email.com,07701234567,"852 Hickory Ln, Nottingham, UK","Samsung Galaxy Tab S9, Logitech MX Master 3","Samsung, Logitech",tablet + mouse,£649.99 + £89.99,1 each,£739.98,22/03/2024,shipped,Yet another multi-product nightmare

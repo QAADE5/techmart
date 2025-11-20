@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMart Current System - The Problem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            color: #d32f2f;
+            margin-bottom: 20px;
+        }
+        
+        .spreadsheet-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        td {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        .problem-cell {
+            background-color: #ffebee;
+        }
+        
+        .duplicate {
+            background-color: #fff3e0;
+        }
+        
+        .missing {
+            background-color: #fce4ec;
+            font-style: italic;
+            color: #999;
+        }
+        
+        .inconsistent {
+            background-color: #e8f5e8;
+        }
+        
+        .problems-list {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffebee;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .problems-list h3 {
+            color: #d32f2f;
+            margin-top: 0;
+        }
+        
+        .problems-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .legend {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 11px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TechMart's Current "System"</h1>
+        <h2>Customer Orders Spreadsheet - orders_march_2024.xlsx</h2>
+    </div>
+    
+    <div class="spreadsheet-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Product</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1001</td>
+                    <td class="duplicate">James Smith</td>
+                    <td>james.smith@email.com</td>
+                    <td>07700123456</td>
+                    <td>123 Oak St, London, UK</td>
+                    <td>ThinkPad X1 Carbon</td>
+                    <td>Lenovo</td>
+                    <td>laptop</td>
+                    <td>£1299.99</td>
+                    <td>1</td>
+                    <td>£1299.99</td>
+                    <td>01/03/2024</td>
+                    <td>delivered</td>
+                    <td>VIP customer</td>
+                </tr>
+                <tr>
+                    <td>1001</td>
+                    <td class="duplicate">James Smith</td>
+                    <td>james.smith@email.com</td>
+                    <td>07700123456</td>
+                    <td>123 Oak St, London, UK</td>
+                    <td>AirPods Pro</td>
+                    <td>Apple</td>
+                    <td>accessories</td>
+                    <td>£249.00</td>
+                    <td>1</td>
+                    <td class="problem-cell">£249.00</td>
+                    <td>01/03/2024</td>
+                    <td>delivered</td>
+                    <td>Same order as laptop!</td>
+                </tr>
+                <tr>
+                    <td>1002</td>
+                    <td>Sarah Johnson</td>
+                    <td>sarah.j@email.com</td>
+                    <td class="missing">-</td>
+                    <td>456 Elm Ave, Manchester</td>
+                    <td>Samsung Galaxy S24</td>
+                    <td>Samsung</td>
+                    <td class="inconsistent">phone</td>
+                    <td>749.99</td>
+                    <td>1</td>
+                    <td class="problem-cell">749.99</td>
+                    <td>2/3/24</td>
+                    <td class="inconsistent">DELIVERED</td>
+                    <td class="missing">-</td>
+                </tr>
+                <tr>
+                    <td>1003</td>
+                    <td>David Williams</td>
+                    <td>david.williams@email.com</td>
+                    <td>07700345678</td>
+                    <td class="missing">Birmingham (no full address)</td>
+                    <td>HP Pavilion 15, Logitech MX Master 3</td>
+                    <td>HP, Logitech</td>
+                    <td class="inconsistent">Laptop/Mouse</td>
+                    <td>£649.99 + £89.99</td>
+                    <td class="problem-cell">1 + 1</td>
+                    <td>£739.98</td>
+                    <td>03-03-2024</td>
+                    <td>shipped</td>
+                    <td>Multiple products in one row!</td>
+                </tr>
+                <tr>
+                    <td>1004</td>
+                    <td class="duplicate">James Smith</td>
+                    <td class="problem-cell">j.smith@email.com</td>
+                    <td class="problem-cell">07700123457</td>
+                    <td>123 Oak Street, London, UK</td>
+                    <td>Nintendo Switch OLED</td>
+                    <td>Nintendo</td>
+                    <td class="inconsistent">Gaming</td>
+                    <td>309.99</td>
+                    <td>1</td>
+                    <td class="problem-cell">309.99</td>
+                    <td>05/03/2024</td>
+                    <td>delivered</td>
+                    <td>Same customer? Different email & phone!</td>
+                </tr>
+                <tr>
+                    <td>1005</td>
+                    <td>Emma Brown</td>
+                    <td>emma.brown@email.com</td>
+                    <td>07700456789</td>
+                    <td>789 Pine Rd, Leeds, UK</td>
+                    <td>Dell XPS 13</td>
+                    <td>Dell</td>
+                    <td class="inconsistent">laptop</td>
+                    <td>£999.99</td>
+                    <td>1</td>
+                    <td>£999.99</td>
+                    <td class="missing">March 2024</td>
+                    <td>processing</td>
+                    <td class="missing">-</td>
+                </tr>
+                <tr>
+                    <td class="problem-cell">1006a</td>
+                    <td>Michael Jones</td>
+                    <td>michael.jones@email.com</td>
+                    <td>07700567890</td>
+                    <td>321 Birch Ln, Liverpool, UK</td>
+                    <td class="missing">Google Pixel 8 - RETURNED</td>
+                    <td>Google</td>
+                    <td class="inconsistent">smartphone</td>
+                    <td class="problem-cell">-£599.00</td>
+                    <td class="problem-cell">-1</td>
+                    <td class="problem-cell">-£599.00</td>
+                    <td>08/03/2024</td>
+                    <td class="problem-cell">returned</td>
+                    <td>How do we handle returns?</td>
+                </tr>
+                <tr>
+                    <td class="missing">???</td>
+                    <td>Sophie Davis</td>
+                    <td>sophie.davis@email.com</td>
+                    <td>07700678901</td>
+                    <td>654 Cedar St, Edinburgh, Scotland</td>
+                    <td>iPhone 15 + iPad Pro</td>
+                    <td>Apple</td>
+                    <td class="problem-cell">phones & tablets?</td>
+                    <td class="problem-cell">£799 + £549.99 (discount applied)</td>
+                    <td>1 + 1</td>
+                    <td>£1348.00</td>
+                    <td>10/03/2024</td>
+                    <td>shipped</td>
+                    <td>Discount applied but where's the record?</td>
+                </tr>
+                <tr>
+                    <td>1007</td>
+                    <td class="duplicate">Sarah Johnson</td>
+                    <td class="problem-cell">sarah.johnson@email.com</td>
+                    <td>07700234567</td>
+                    <td>456 Elm Avenue, Manchester, UK</td>
+                    <td>Logitech MX Master 3</td>
+                    <td>Logitech</td>
+                    <td class="inconsistent">Accessories</td>
+                    <td>£89.99</td>
+                    <td>1</td>
+                    <td>£89.99</td>
+                    <td>12/03/2024</td>
+                    <td>delivered</td>
+                    <td>Repeat customer - different email format!</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color duplicate"></div>
+                <span>Duplicate customers</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color problem-cell"></div>
+                <span>Data problems</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color missing"></div>
+                <span>Missing information</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color inconsistent"></div>
+                <span>Inconsistent formats</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="problems-list">
+        <h3>Major Problems with This Approach:</h3>
+        <ul>
+            <li><strong>Data Duplication:</strong> Customer details repeated for every order</li>
+            <li><strong>Inconsistent Formats:</strong> Dates, categories, status values all different</li>
+            <li><strong>Multiple Products per Row:</strong> Can't properly track individual items</li>
+            <li><strong>Missing Order IDs:</strong> How do we track what belongs together?</li>
+            <li><strong>No Data Integrity:</strong> Same customer with different emails/phones</li>
+            <li><strong>Hard to Query:</strong> Try finding "all customers who bought gaming products"!</li>
+            <li><strong>Storage Waste:</strong> Repeating the same customer info hundreds of times</li>
+            <li><strong>Update Nightmares:</strong> Customer moves house = update 50+ rows!</li>
+        </ul>
+    </div>
+</body>
+</html>
