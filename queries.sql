@@ -1,29 +1,30 @@
--- TechMart E-commerce Database Setup
--- Session 1: Database Foundations & SQL Essentials
+-- TechMart E-commerce Database
 
 USE TechMart;
+GO
 
--- SAMPLE QUERIES FOR THE SESSION
-
--- Basic Queries (20 mins into hands-on)
+-- Basic Queries
 -- 1. View all products
 
 SELECT * FROM Products;
-
+GO
+    
 -- 2. Find products under £100
 
 SELECT ProductName, Price, Brand 
 FROM Products 
 WHERE Price < 100;
-
+GO
+    
 -- 3. Count products by category
 
 SELECT c.CategoryName, COUNT(p.ProductID) as ProductCount
 FROM Categories c
 LEFT JOIN Products p ON c.CategoryID = p.CategoryID
 GROUP BY c.CategoryName;
-
--- Join Queries (Final 25 mins)
+GO
+    
+-- Join Queries
 -- 1. Customer orders with details
 
 SELECT 
@@ -34,7 +35,8 @@ SELECT
 FROM Customers c
 JOIN Orders o ON c.CustomerID = o.CustomerID
 ORDER BY o.OrderDate DESC;
-
+GO
+    
 -- 2. Top-selling products
 
 SELECT 
@@ -46,7 +48,8 @@ FROM Products p
 JOIN OrderItems oi ON p.ProductID = oi.ProductID
 GROUP BY p.ProductName, p.Brand
 ORDER BY TotalSold DESC;
-
+GO
+    
 -- 3. Customer purchase summary
 
 SELECT 
@@ -58,7 +61,8 @@ FROM Customers c
 LEFT JOIN Orders o ON c.CustomerID = o.CustomerID
 GROUP BY c.CustomerID, c.FirstName, c.LastName, c.City
 ORDER BY TotalSpent DESC;
-
+GO
+    
 -- 4. Orders with product details (complex join)
 
 SELECT 
@@ -75,17 +79,4 @@ JOIN OrderItems oi ON o.OrderID = oi.OrderID
 JOIN Products p ON oi.ProductID = p.ProductID
 JOIN Categories cat ON p.CategoryID = cat.CategoryID
 ORDER BY o.OrderDate DESC, o.OrderID;
-
--- PROGRESSIVE EXERCISES FOR LEARNERS
-
--- Exercise 1: Basic Exploration
--- Find all Apple products and their prices
-
--- Exercise 2: Filtering & Sorting  
--- Show customers from Scotland, ordered by join date
-
--- Exercise 3: Aggregation
--- Calculate average order value by region
-
--- Exercise 4: Complex Join
--- Find customers who bought gaming products
+GO
