@@ -1,0 +1,172 @@
+# =============================================================================
+# SOLUTION TEMPLATES
+# =============================================================================
+
+# SOLUTION 1: Categories
+category_mapping_solution = {
+    'laptop': 'Laptops',
+    'laptops': 'Laptops', 
+    'phone': 'Smartphones',
+    'smartphone': 'Smartphones',
+    'accessories': 'Accessories',
+    'accessory': 'Accessories',
+    'gaming': 'Gaming',
+    'tablet': 'Tablets',
+    'tablets': 'Tablets'
+}
+
+# Beginner
+for i in range(len(df)):
+    value = df.loc[i, 'Category']      # get the original value
+    value = value.lower()              # make it lowercase
+    df.loc[i, 'Category_Clean'] = category_mapping.get(value, value)  
+    # .get ensures we don’t crash if key not found
+    # If value is found in category_mapping, you’ll get the mapped value.
+    # If value is not found, it will just return the original value unchanged.
+
+
+# =============================================================================
+# SOLUTION 2: Prices
+# =============================================================================
+def clean_price_solution(price_str):
+    if pd.isna(price_str):
+        return None
+    
+    # Remove £ and spaces
+    cleaned = str(price_str).replace('£', '').replace(' ', '')
+    
+    # Handle additions (take first price for simplicity)
+    if '+' in cleaned:
+        cleaned = cleaned.split('+')[0]
+    
+    # Handle negative (returns)
+    try:
+        return float(cleaned)
+    except:
+        return None
+
+# =============================================================================
+# SOLUTION 3: Dates
+# =============================================================================
+def clean_date_solution(date_str):
+    if pd.isna(date_str):
+        return None
+    
+    # Handle "March 2024" format
+    if 'March 2024' in str(date_str):
+        return pd.to_datetime('2024-03-01')
+    
+    # Try to parse other formats
+    return pd.to_datetime(date_str, dayfirst=True, errors='coerce')
+
+    # dayfirst=True ~ Tells Pandas to interpret dates in day/month/year order (UK style).
+    # Without it, Pandas assumes month/day/year (US style).
+
+    # errors='coerce' ~ If the string can’t be parsed as a date, it gives NaT
+    # (Not a Time, Pandas’ version of NaN for dates).
+
+# =============================================================================
+# Solution 4 ~ Complex
+# =============================================================================
+def split_multi_product_rows(df):
+    """
+    Split rows with multiple products into separate rows
+    This handles the complex case of parsing comma-separated values
+    """
+    # Create lists to store the expanded data
+    expanded_rows = []
+    
+    for idx, row in df.iterrows():
+        product_text = str(row['Product']) if pd.notna(row['Product']) else ""
+        
+        # Check if this row has multiple products (contains comma)
+        if ',' in product_text:
+            # Split the multi-product fields
+            products = [p.strip() for p in product_text.split(',')]
+            
+            # Split brands if available
+            brand_text = str(row['Brand']) if pd.notna(row['Brand']) else ""
+            brands = [b.strip() for b in brand_text.split(',') if b.strip()]
+            
+            # Pad brands list to match products length
+            while len(brands) < len(products):
+                brands.append(brands[-1] if brands else "Unknown")
+            
+            # Handle prices - this is tricky!
+            price_text = str(row['Price']) if pd.notna(row['Price']) else ""
+            prices = []
+            
+            if '+' in price_text:
+                # Handle "£649.99 + £89.99" format
+                price_parts = [p.strip() for p in price_text.split('+')]
+                prices = price_parts
+            else:
+                # Single price for all products
+                prices = [price_text] * len(products)
+            
+            # Handle quantities
+            qty_text = str(row['Qty']) if pd.notna(row['Qty']) else "1"
+            if '+' in qty_text:
+                # Handle "1 + 1" format
+                qty_parts = [q.strip() for q in qty_text.split('+')]
+                quantities = qty_parts
+            else:
+                # Single quantity for all products
+                quantities = [qty_text] * len(products)
+            
+            # Create separate rows for each product
+            for i, product in enumerate(products):
+                new_row = row.copy()
+                new_row['Product'] = product
+                new_row['Brand'] = brands[i] if i < len(brands) else brands[-1]
+                new_row['Price'] = prices[i] if i < len(prices) else prices[0]
+                new_row['Qty'] = quantities[i] if i < len(quantities) else quantities[0]
+                
+                # Add a flag to show this was split
+                new_row['Split_From_Multi'] = True
+                new_row['Original_Row_Index'] = idx
+                
+                expanded_rows.append(new_row)
+        else:
+            # Single product row - keep as is
+            new_row = row.copy()
+            new_row['Split_From_Multi'] = False
+            new_row['Original_Row_Index'] = idx
+            expanded_rows.append(new_row)
+    
+    # Convert back to DataFrame
+    result_df = pd.DataFrame(expanded_rows)
+    result_df = result_df.reset_index(drop=True)
+    
+    return result_df
+
+# =============================================================================
+# SOLUTION 4 ~ Simpler
+# =============================================================================
+def simple_split_multi_product_rows(df):
+    """
+    Simplified version - just handle the basic comma splitting
+    """
+    expanded_rows = []
+    
+    for idx, row in df.iterrows():
+        product_text = str(row['Product'])
+        
+        if ',' in product_text:
+            # Split products by comma
+            products = [p.strip() for p in product_text.split(',')]
+            
+            # Create a row for each product
+            for product in products:
+                new_row = row.copy()
+                new_row['Product'] = product
+                new_row['Notes'] = f"Split from: {product_text}"
+                expanded_rows.append(new_row)
+        else:
+            # Keep single product rows as they are
+            expanded_rows.append(row)
+    
+    return pd.DataFrame(expanded_rows).reset_index(drop=True)
+
+
+# =============================================================================
