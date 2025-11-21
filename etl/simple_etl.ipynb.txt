@@ -1,0 +1,462 @@
+# Session 3: Simple ETL Pipeline - Jupyter Notebook Format
+
+# Cell 1: [Markdown]
+"""
+# Session 3: Building an ETL Pipeline!
+
+**What is ETL?**
+- **E**xtract: Get data from sources (files, databases)
+- **T**ransform: Clean and process the data  
+- **L**oad: Save the cleaned data somewhere useful
+
+**Learning Objectives:**
+- Understand the ETL concept
+- Build a simple but complete data pipeline
+- See how SQL and Python work together
+- Prepare for the advanced modules ahead
+
+Let's turn TechMart's messy data into business insights!
+"""
+
+# Cell 2: [Code] - Imports and setup
+import pandas as pd
+import numpy as np
+from datetime import datetime
+
+print("ETL Pipeline Setup")
+print("=" * 30)
+print("Libraries loaded")
+print(f"Pipeline started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+# Cell 3: [Markdown]
+"""
+## STEP 1: EXTRACT - Getting Our Data
+
+The first step in any ETL pipeline is getting the data from wherever it lives.
+For TechMart, that's their messy CSV file we've been working with.
+
+**In the real world, you might extract from:**
+- Databases (SQL Server, PostgreSQL, etc.)
+- APIs (REST endpoints, web services)
+- Files (CSV, JSON, Excel, etc.)
+- Streaming data (Kafka, event streams)
+- Cloud storage (S3, Azure Blob, etc.)
+"""
+
+# Cell 4: [Code] - Extract step
+print("STEP 1: EXTRACT - Getting our data")
+print("=" * 40)
+
+# Extract from CSV file
+print("Loading TechMart data from CSV file...")
+df = pd.read_csv('techmart_messy_data.csv')
+
+print(f"Successfully extracted {len(df)} rows of data")
+print(f"Columns found: {list(df.columns)}")
+
+# Quick peek at what we extracted
+print("\nSample of extracted data:")
+print(df.head(3))
+
+# Cell 5: [Markdown]
+"""
+## STEP 2: TRANSFORM - Cleaning Our Data
+
+This is where the magic happens! We take messy, inconsistent data and make it useful.
+
+**Today we'll apply these transformations:**
+1. Fix missing values
+2. Standardise categories
+3. Clean price data
+4. Add useful business columns
+5. Flag data quality issues
+
+**Run each cell below to see the transformations in action!**
+"""
+
+# Cell 6: [Code] - Start transformations
+print("STEP 2: TRANSFORM - Cleaning our data")
+print("=" * 40)
+
+# Create a copy to work with (good practice!)
+df_clean = df.copy()
+print(f"Created working copy with {len(df_clean)} rows")
+
+# Cell 7: [Code] - Transformation 1: Fix missing values
+print("\n--- Transformation 1: Fix missing values ---")
+
+# Count missing values before
+missing_before = df_clean.isnull().sum().sum()
+print(f"Missing values before: {missing_before}")
+
+# Fix missing phone numbers
+df_clean['Phone'] = df_clean['Phone'].fillna('Not provided')
+
+# Fix any other missing values you find
+df_clean['Notes'] = df_clean['Notes'].fillna('No notes')
+
+missing_after = df_clean.isnull().sum().sum()
+print(f"Missing values after: {missing_after}")
+print(f"Fixed {missing_before - missing_after} missing values!")
+
+# Cell 8: [Code] - Transformation 2: Standardise categories
+print("\n--- Transformation 2: Standardise categories ---")
+
+print("Categories before cleaning:")
+print(df_clean['Category'].value_counts())
+
+# Simple standardisation approach
+df_clean['Category'] = df_clean['Category'].str.lower().str.strip()
+
+# Replace variations with standard names
+replacements = {
+    'laptop': 'laptops',
+    'phone': 'smartphones', 
+    'smartphone': 'smartphones',
+    'accessory': 'accessories',
+    'gaming': 'gaming'
+}
+
+for old, new in replacements.items():
+    df_clean['Category'] = df_clean['Category'].str.replace(old, new)
+
+print("\nCategories after cleaning:")
+print(df_clean['Category'].value_counts())
+print("Categories standardised!")
+
+# Cell 9: [Code] - Transformation 3: Clean price data
+print("\n--- Transformation 3: Clean price data ---")
+
+def simple_price_clean(price_text):
+    """Clean price data - remove symbols and convert to numbers"""
+    if pd.isna(price_text):
+        return 0.0
+    
+    # Convert to string and clean up
+    clean_price = str(price_text).replace('£', '').replace(',', '').strip()
+    
+    # Handle multiple prices (just take the first one for simplicity)
+    if '+' in clean_price:
+        clean_price = clean_price.split('+')[0].strip()
+    
+    # Handle negative prices (returns)
+    if clean_price.startswith('-'):
+        clean_price = clean_price[1:]  # Remove minus sign for now
+    
+    # Convert to float
+    try:
+        return float(clean_price)
+    except ValueError:
+        return 0.0
+
+# Apply price cleaning
+print("Sample prices before:")
+print(df_clean['Price'].head(3).tolist())
+
+df_clean['Price_Clean'] = df_clean['Price'].apply(simple_price_clean)
+
+print("Sample prices after:")
+print(df_clean['Price_Clean'].head(3).tolist())
+print("Prices cleaned and converted to numbers!")
+
+# Cell 10: [Code] - Transformation 4: Add business value
+print("\n--- Transformation 4: Add useful business columns ---")
+
+# Add order month (simple version - all March 2024)
+df_clean['Order_Month'] = 'March 2024'
+
+# Flag expensive items
+df_clean['High_Value_Item'] = df_clean['Price_Clean'] > 500
+
+# Count how many customers appear multiple times  
+customer_counts = df_clean['Customer Name'].value_counts()
+df_clean['Repeat_Customer'] = df_clean['Customer Name'].map(customer_counts) > 1
+
+# Add price category
+def price_category(price):
+    if price < 100:
+        return 'Budget'
+    elif price < 500:
+        return 'Mid-Range'
+    else:
+        return 'Premium'
+
+df_clean['Price_Category'] = df_clean['Price_Clean'].apply(price_category)
+
+# Summary of what we added
+high_value_count = df_clean['High_Value_Item'].sum()
+repeat_customer_count = df_clean['Repeat_Customer'].sum()
+
+print(f"Added business columns:")
+print(f"   Order month for all records")
+print(f"   {high_value_count} high-value items identified")
+print(f"   {repeat_customer_count} repeat customer records found") 
+print(f"   Price categories assigned to all items")
+
+# Cell 11: [Markdown]
+"""
+## STEP 3: LOAD - Saving Our Cleaned Data
+
+Now we save our beautiful, clean data somewhere useful! 
+
+**Loading options in the real world:**
+- Database tables (most common)
+- Data warehouses (for analytics)
+- Cloud storage (for big data)
+- APIs (to other systems)
+- Files (for sharing or backup)
+
+Today we'll save to CSV (simple) and show how database loading works.
+"""
+
+# Cell 12: [Code] - Load step
+print("STEP 3: LOAD - Saving our cleaned data")
+print("=" * 40)
+
+# Save to CSV file
+output_filename = f'techmart_cleaned_{datetime.now().strftime("%Y%m%d_%H%M")}.csv'
+df_clean.to_csv(output_filename, index=False)
+
+print(f"Cleaned data saved to: {output_filename}")
+print(f"Saved {len(df_clean)} rows and {len(df_clean.columns)} columns")
+
+# Show what we accomplished
+original_columns = len(df.columns)
+new_columns = len(df_clean.columns)
+added_columns = new_columns - original_columns
+
+print(f"\nTRANSFORMATION SUMMARY:")
+print(f"   Started with: {len(df)} rows, {original_columns} columns")
+print(f"   Ended with: {len(df_clean)} rows, {new_columns} columns")
+print(f"   Added {added_columns} new business value columns")
+
+# Cell 13: [Markdown]
+"""
+## STEP 4: VALIDATE - Checking Our Work
+
+Good data engineers always validate their pipelines! Let's make sure everything worked correctly.
+
+**Common validation checks:**
+- Data types are correct
+- No unexpected missing values
+- Business rules are satisfied
+- Row counts make sense
+- Distributions look reasonable
+"""
+
+# Cell 14: [Code] - Validation step
+print("STEP 4: VALIDATE - Checking our work")
+print("=" * 40)
+
+# Validation checks
+validation_results = []
+
+# Check 1: No unexpected missing values in key columns
+key_columns = ['Customer Name', 'Product', 'Price_Clean']
+for col in key_columns:
+    missing_count = df_clean[col].isnull().sum()
+    passed = missing_count == 0
+    validation_results.append((f"No missing {col}", passed))
+    if not passed:
+        print(f" Found {missing_count} missing values in {col}")
+
+# Check 2: All prices are positive numbers
+positive_prices = (df_clean['Price_Clean'] >= 0).all()
+validation_results.append(("All prices are non-negative", positive_prices))
+
+# Check 3: Categories are standardised
+max_categories = 10  # Should have reasonable number of categories
+category_count = df_clean['Category'].nunique()
+categories_ok = category_count <= max_categories
+validation_results.append((f"Categories standardised ({category_count} unique)", categories_ok))
+
+# Check 4: High value items flagged correctly
+high_value_check = df_clean[df_clean['High_Value_Item'] == True]['Price_Clean'].min() > 500
+validation_results.append(("High value items correctly flagged", high_value_check))
+
+# Print validation results
+print("VALIDATION RESULTS:")
+passed_count = 0
+for check_name, passed in validation_results:
+    status = "✅ PASS" if passed else "❌ FAIL"
+    print(f"   {status}: {check_name}")
+    if passed:
+        passed_count += 1
+
+overall_success = passed_count == len(validation_results)
+print(f"\nOverall Pipeline Status: {'🎉 SUCCESS' if overall_success else '⚠️ NEEDS ATTENTION'}")
+print(f"Passed {passed_count}/{len(validation_results)} validation checks")
+
+# Cell 15: [Markdown]
+"""
+Pick one exercise based on your comfort level:
+
+### 🟢 Exercise A: Business Analysis (Easier)
+Perfect if you're newer to Python - focus on using the cleaned data
+
+### 🟡 Exercise B: Pipeline Enhancement (Medium)  
+Good if you're comfortable with pandas - add new transformations
+
+### 🔴 Exercise C: Advanced Features (Harder)
+For confident Python users - add sophisticated pipeline features
+
+**Choose the exercise that challenges you appropriately!**
+"""
+
+# Cell 16: [Code] - Exercise A: Business Analysis (Easier)
+print("🟢 EXERCISE A: Business Analysis")
+print("Perfect for building confidence with pandas!")
+print("=" * 40)
+
+def exercise_a_analysis():
+    """Use our cleaned data to answer business questions"""
+    
+    print("Let's answer some business questions!")
+    
+    # Question 1: How many unique customers do we have?
+    unique_customers = df_clean['Customer Name'].nunique()
+    print(f"1. Unique customers: {unique_customers}")
+    
+    # Question 2: What's our most popular category?
+    top_category = df_clean['Category'].value_counts().index[0]
+    top_category_count = df_clean['Category'].value_counts().iloc[0]
+    print(f"2. Most popular category: {top_category} ({top_category_count} orders)")
+    
+    # TODO: Your turn! Answer these questions:
+    print("\nYour turn to investigate:")
+    print("3. What's the total value of all orders?")
+    # total_value = df_clean['Price_Clean'].sum()
+    
+    print("4. How many high-value items (>£500) do we have?")
+    # high_value_count = df_clean['High_Value_Item'].sum()
+    
+    print("5. Which customer appears most often in our data?")
+    # most_frequent_customer = df_clean['Customer Name'].value_counts().index[0]
+    
+    print("\nTry creating a simple summary report!")
+
+# Run Exercise A
+# exercise_a_analysis()
+
+# Cell 17: [Code] - Exercise B: Pipeline Enhancement (Medium)
+print("🟡 EXERCISE B: Pipeline Enhancement") 
+print("Add new transformations to make our pipeline even better!")
+print("=" * 40)
+
+def exercise_b_enhancement():
+    """Enhance our ETL pipeline with additional transformations"""
+    
+    print("🔧 Let's add more transformations!")
+    
+    # Enhancement 1: Email domain analysis
+    print("\n--- Email Domain Analysis ---")
+    # TODO: Extract email domains and see which are most common
+    # df_clean['Email_Domain'] = df_clean['Email'].str.split('@').str[1]
+    # print(df_clean['Email_Domain'].value_counts().head())
+    
+    # Enhancement 2: Order timing analysis  
+    print("\n--- Order Timing Analysis ---")
+    # TODO: If you have date data, analyze order patterns
+    # What day of week? What time of month?
+    
+    # Enhancement 3: Customer value scoring
+    print("\n--- Customer Value Scoring ---")
+    # TODO: Create a customer value score based on:
+    # - Total spending
+    # - Number of orders  
+    # - Recency of orders
+    
+    # Enhancement 4: Data quality scoring
+    print("\n--- Data Quality Scoring ---")
+    # TODO: Give each record a quality score based on:
+    # - Missing data
+    # - Consistent formatting
+    # - Reasonable values
+    
+    print("\nPick one enhancement and implement it!")
+
+# Run Exercise B
+# exercise_b_enhancement()
+
+# Cell 18: [Code] - Exercise C: Advanced Features (Harder)
+print("🔴 EXERCISE C: Advanced Pipeline Features")
+print("For confident Python users - let's build professional features!")
+print("=" * 40)
+
+def exercise_c_advanced():
+    """Add professional-grade pipeline features"""
+    
+    print("Professional pipeline features!")
+    
+    # Advanced 1: Error handling and logging
+    print("\n--- Error Handling ---")
+    # TODO: Add try/catch blocks and logging
+    # Create a proper logging system for the pipeline
+    
+    # Advanced 2: Data profiling
+    print("\n--- Data Profiling ---")
+    # TODO: Generate a data quality report
+    # - Missing value percentages
+    # - Data type consistency
+    # - Value distributions
+    # - Outlier detection
+    
+    # Advanced 3: Pipeline configuration
+    print("\n--- Configuration Management ---")
+    # TODO: Make the pipeline configurable
+    # - Column mappings in a config file
+    # - Transformation rules as parameters
+    # - Output destinations as settings
+    
+    # Advanced 4: Performance monitoring
+    print("\n--- Performance Monitoring ---")
+    # TODO: Add timing and performance metrics
+    # - How long each step takes
+    # - Memory usage monitoring
+    # - Row processing rates
+    
+    print("\nChoose one advanced feature to implement!")
+
+# Run Exercise C
+# exercise_c_advanced()
+
+# Cell 19: [Markdown]
+"""
+## Wrap-up: What You've Accomplished Today!
+
+### Today's Achievements:
+
+**Morning (SQL Skills):**
+- ✅ Designed a proper database structure
+- ✅ Created tables with relationships
+- ✅ Wrote complex SQL queries with joins
+- ✅ Understood normalisation principles
+
+**Afternoon (Python + ETL Skills):**
+- ✅ Loaded and explored messy data
+- ✅ Applied systematic data cleaning
+- ✅ Built your first ETL pipeline
+- ✅ Validated your results
+
+**Hopefully you now understand the core data engineering workflow!**
+"""
+
+# Cell 20: [Code] - Final pipeline summary
+print("FINAL PIPELINE SUMMARY")
+print("=" * 50)
+
+print("WHAT YOU BUILT TODAY:")
+print("   EXTRACT: Read data from CSV files")
+print("   TRANSFORM: Cleaned and enriched the data") 
+print("   LOAD: Saved clean data to new files")
+print("   VALIDATE: Checked the pipeline worked correctly")
+
+print(f"\nFINAL NUMBERS:")
+print(f"   Input: {len(df)} messy records")
+print(f"   Output: {len(df_clean)} clean records") 
+print(f"   Added: {len(df_clean.columns) - len(df.columns)} new columns")
+print(f"   Quality: {passed_count}/{len(validation_results)} checks passed")
+
+print(f"\nPipeline completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print("Congratulations!")
+
